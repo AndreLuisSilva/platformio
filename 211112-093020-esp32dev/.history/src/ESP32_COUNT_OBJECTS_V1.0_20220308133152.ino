@@ -10,8 +10,7 @@
 #include "esp_task_wdt.h"
 #include <Vector.h>
 #include <Streaming.h>
-#define RELAY_PIN 4
-#define SENSOR 18
+#define RELAY_PIN 18
 #define RELAY_ON 1
 #define RELAY_OFF 0
 #define ARRAY_SIZE 60
@@ -19,11 +18,11 @@
 #define MAC_ADDRESS "B8:27:EB:B0:21:80"
 #define FORMAT_LITTLEFS_IF_FAILED true
 
-//const char *ssid = "ForSellEscritorio";
-//const char *password = "forsell1010";
+const char *ssid = "ForSellEscritorio";
+const char *password = "forsell1010";
 
-const char *ssid = "Andrew";
-const char *password = "teste123";
+//const char *ssid = "Andrew";
+//const char *password = "teste123";
 
 //const char *ssid = "Andre Wifi";
 //const char *password = "090519911327";
@@ -84,8 +83,6 @@ void TASK_Send_POST(void *p);
 void listAllFiles();
 int count_Lines_SPIFFS();
 void send_POST();
-void send_POST_Again();
-void check_Wifi_Connection();
 
 // Classe FS_File_Record e suas funções
 class FS_File_Record
@@ -120,7 +117,6 @@ void setup()
   Serial.begin(115200);
 
   pinMode(RELAY_PIN, INPUT_PULLUP);
-  //pinMode(SENSOR, INPUT);
 
   esp_task_wdt_init(10, true);
   //esp_task_wdt_add(NULL);
@@ -250,13 +246,12 @@ void TASK_Send_Data_From_SPIFFS(void *p)
     vTaskDelay(pdMS_TO_TICKS(50));
     ESP_LOGI("TASK_Send_Data_From_SPIFFS", "OK");
   }
-  
 }
 
 void TASK_Send_POST(void *p)
 {
   esp_task_wdt_delete(NULL);
-  char * myReceivedItem;
+  char *myReceivedItem;
   while (true)
   {
     if (buffer == NULL)
@@ -265,7 +260,7 @@ void TASK_Send_POST(void *p)
     if (xQueueReceive(buffer, &myReceivedItem, portMAX_DELAY) == true) //Se recebeu o valor dentro de 1seg (timeout), mostrara na tela
     {
       send_POST(myReceivedItem);
-      free(myReceivedItem);
+      //free(myReceivedItem);
     }
     vTaskDelay(pdMS_TO_TICKS(50));
   }
@@ -278,18 +273,16 @@ void TASK_Check_Relay_Status(void *p)
   while (true)
   {
     esp_task_wdt_reset();
-    //Serial.println("teste");
 
     if (digitalRead(RELAY_PIN))
     {
-      //Serial.println("teste");
+
       flag_Objects = true;
     }
 
     if (!digitalRead(RELAY_PIN) && flag_Objects == true)
     {
 
-      //Serial.println("teste");
       flag_Objects = false;
       count_Objects++;
       Serial.print("Contagem de objetos detectados: ");
@@ -305,24 +298,19 @@ void TASK_Check_Relay_Status(void *p)
       Serial.println(myItem);
       xQueueSend(buffer, &myItem, pdMS_TO_TICKS(0));
     }
-
-  
     vTaskDelay(pdMS_TO_TICKS(100));
   }
- } 
-
+}
 
 bool hasInternet()
 {
   WiFiClient client;
   //Endereço IP do Google 172.217.3.110
-  IPAddress adr = IPAddress(8, 8, 8, 8);
+  IPAddress adr = IPAddress(8, 8, 4, 4);
   //Tempo limite para conexão
   client.setTimeout(5);
   //Tenta conectar
   bool connected = client.connect(adr, 80);
-  Serial.print("estado da conexão: ");
-  Serial.println(connected);
   //Fecha a conexão
   client.stop();
   //Retorna true se está conectado ou false se está desconectado
@@ -363,12 +351,11 @@ void check_Wifi_Connection()
 void send_POST_Again()
 {
   if (ObjFS.fileExists())
-  {    
+  {
     if (WiFi.status() == WL_CONNECTED)
-    {      
-      //if (hasInternet())
-      if (check_Ping())
-      {        
+    {
+      if (hasInternet())
+      {
         File file = SPIFFS.open(myFilePath, FILE_READ);
 
         String line = "";

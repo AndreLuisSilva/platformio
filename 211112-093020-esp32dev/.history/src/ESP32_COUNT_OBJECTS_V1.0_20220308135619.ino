@@ -10,7 +10,7 @@
 #include "esp_task_wdt.h"
 #include <Vector.h>
 #include <Streaming.h>
-#define RELAY_PIN 4
+#define RELAY_PIN 19
 #define SENSOR 18
 #define RELAY_ON 1
 #define RELAY_OFF 0
@@ -19,11 +19,11 @@
 #define MAC_ADDRESS "B8:27:EB:B0:21:80"
 #define FORMAT_LITTLEFS_IF_FAILED true
 
-//const char *ssid = "ForSellEscritorio";
-//const char *password = "forsell1010";
+const char *ssid = "ForSellEscritorio";
+const char *password = "forsell1010";
 
-const char *ssid = "Andrew";
-const char *password = "teste123";
+//const char *ssid = "Andrew";
+//const char *password = "teste123";
 
 //const char *ssid = "Andre Wifi";
 //const char *password = "090519911327";
@@ -120,7 +120,7 @@ void setup()
   Serial.begin(115200);
 
   pinMode(RELAY_PIN, INPUT_PULLUP);
-  //pinMode(SENSOR, INPUT);
+  pinMode(SENSOR, INPUT);
 
   esp_task_wdt_init(10, true);
   //esp_task_wdt_add(NULL);
@@ -250,7 +250,6 @@ void TASK_Send_Data_From_SPIFFS(void *p)
     vTaskDelay(pdMS_TO_TICKS(50));
     ESP_LOGI("TASK_Send_Data_From_SPIFFS", "OK");
   }
-  
 }
 
 void TASK_Send_POST(void *p)
@@ -264,8 +263,8 @@ void TASK_Send_POST(void *p)
 
     if (xQueueReceive(buffer, &myReceivedItem, portMAX_DELAY) == true) //Se recebeu o valor dentro de 1seg (timeout), mostrara na tela
     {
-      send_POST(myReceivedItem);
-      free(myReceivedItem);
+      //send_POST(myReceivedItem);
+      //free(myReceivedItem);
     }
     vTaskDelay(pdMS_TO_TICKS(50));
   }
@@ -278,51 +277,62 @@ void TASK_Check_Relay_Status(void *p)
   while (true)
   {
     esp_task_wdt_reset();
-    //Serial.println("teste");
 
-    if (digitalRead(RELAY_PIN))
+    //if (digitalRead(RELAY_PIN))
+    //{
+
+    //  flag_Objects = true;
+    //}
+
+    //if (!digitalRead(RELAY_PIN) && flag_Objects == true)
+    //{
+
+    //  flag_Objects = false;
+    //  count_Objects++;
+    //  Serial.print("Contagem de objetos detectados: ");
+    //  Serial.println(count_Objects);
+    //  struct tm timeinfo;
+    //  getLocalTime(&timeinfo); // Get local time
+    //  long randNumber = random(999999);
+    //  char myData[150];
+    //  sprintf(myData, "%04d-%02d-%02d %02d:%02d:%02d.%ld", timeinfo.tm_year + 1900, timeinfo.tm_mon + 1, timeinfo.tm_mday, timeinfo.tm_hour, timeinfo.tm_min, timeinfo.tm_sec, randNumber);
+    //  char *myItem = (char *)malloc(strlen(myData) + 1);
+    //  strcpy(myItem, myData);
+    //  Serial.print("Data/Hora da detecção do objeto: ");
+    //  Serial.println(myItem);
+    //  xQueueSend(buffer, &myItem, pdMS_TO_TICKS(0));
+    //}
+
+    //Le as informações do pino do sensor
+  int leitura = digitalRead(SENSOR);
+
+  //Verifica se o objeto foi detectado
+  if (leitura != 1)
+  {
+    //Incrementa o valor do contador
+    count_Objects++;
+    Serial.print("Contador: ");
+    Serial.println(count_Objects);
+
+    //Loop caso o objeto pare sobre o sensor
+    while (digitalRead(SENSOR) != 1)
     {
-      //Serial.println("teste");
-      flag_Objects = true;
+      vTaskDelay(pdMS_TO_TICKS(10));
     }
-
-    if (!digitalRead(RELAY_PIN) && flag_Objects == true)
-    {
-
-      //Serial.println("teste");
-      flag_Objects = false;
-      count_Objects++;
-      Serial.print("Contagem de objetos detectados: ");
-      Serial.println(count_Objects);
-      struct tm timeinfo;
-      getLocalTime(&timeinfo); // Get local time
-      long randNumber = random(999999);
-      char myData[150];
-      sprintf(myData, "%04d-%02d-%02d %02d:%02d:%02d.%ld", timeinfo.tm_year + 1900, timeinfo.tm_mon + 1, timeinfo.tm_mday, timeinfo.tm_hour, timeinfo.tm_min, timeinfo.tm_sec, randNumber);
-      char *myItem = (char *)malloc(strlen(myData) + 1);
-      strcpy(myItem, myData);
-      Serial.print("Data/Hora da detecção do objeto: ");
-      Serial.println(myItem);
-      xQueueSend(buffer, &myItem, pdMS_TO_TICKS(0));
-    }
-
-  
     vTaskDelay(pdMS_TO_TICKS(100));
   }
  } 
-
+}
 
 bool hasInternet()
 {
   WiFiClient client;
   //Endereço IP do Google 172.217.3.110
-  IPAddress adr = IPAddress(8, 8, 8, 8);
+  IPAddress adr = IPAddress(8, 8, 4, 4);
   //Tempo limite para conexão
   client.setTimeout(5);
   //Tenta conectar
   bool connected = client.connect(adr, 80);
-  Serial.print("estado da conexão: ");
-  Serial.println(connected);
   //Fecha a conexão
   client.stop();
   //Retorna true se está conectado ou false se está desconectado
@@ -363,12 +373,11 @@ void check_Wifi_Connection()
 void send_POST_Again()
 {
   if (ObjFS.fileExists())
-  {    
+  {
     if (WiFi.status() == WL_CONNECTED)
-    {      
-      //if (hasInternet())
-      if (check_Ping())
-      {        
+    {
+      if (hasInternet())
+      {
         File file = SPIFFS.open(myFilePath, FILE_READ);
 
         String line = "";

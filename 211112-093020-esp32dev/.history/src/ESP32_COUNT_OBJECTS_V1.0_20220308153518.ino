@@ -10,7 +10,7 @@
 #include "esp_task_wdt.h"
 #include <Vector.h>
 #include <Streaming.h>
-#define RELAY_PIN 4
+#define RELAY_PIN 19
 #define SENSOR 18
 #define RELAY_ON 1
 #define RELAY_OFF 0
@@ -19,11 +19,11 @@
 #define MAC_ADDRESS "B8:27:EB:B0:21:80"
 #define FORMAT_LITTLEFS_IF_FAILED true
 
-//const char *ssid = "ForSellEscritorio";
-//const char *password = "forsell1010";
+const char *ssid = "ForSellEscritorio";
+const char *password = "forsell1010";
 
-const char *ssid = "Andrew";
-const char *password = "teste123";
+//const char *ssid = "Andrew";
+//const char *password = "teste123";
 
 //const char *ssid = "Andre Wifi";
 //const char *password = "090519911327";
@@ -120,7 +120,7 @@ void setup()
   Serial.begin(115200);
 
   pinMode(RELAY_PIN, INPUT_PULLUP);
-  //pinMode(SENSOR, INPUT);
+  pinMode(SENSOR, INPUT);
 
   esp_task_wdt_init(10, true);
   //esp_task_wdt_add(NULL);
@@ -213,7 +213,7 @@ void setup()
       NULL,                         /*parâmetro de entrada para a tarefa (pode ser NULL) */
       1,                            /*prioridade da tarefa (0 a N) */
       NULL,                         /*referência para a tarefa (pode ser NULL) */
-      taskCoreOne);                 /*Núcleo que executará a tarefa */
+      taskCoreZero);                 /*Núcleo que executará a tarefa */
 
   delay(500); //tempo para a tarefa iniciar
 }
@@ -250,7 +250,6 @@ void TASK_Send_Data_From_SPIFFS(void *p)
     vTaskDelay(pdMS_TO_TICKS(50));
     ESP_LOGI("TASK_Send_Data_From_SPIFFS", "OK");
   }
-  
 }
 
 void TASK_Send_POST(void *p)
@@ -264,8 +263,8 @@ void TASK_Send_POST(void *p)
 
     if (xQueueReceive(buffer, &myReceivedItem, portMAX_DELAY) == true) //Se recebeu o valor dentro de 1seg (timeout), mostrara na tela
     {
-      send_POST(myReceivedItem);
-      free(myReceivedItem);
+      //send_POST(myReceivedItem);
+      //free(myReceivedItem);
     }
     vTaskDelay(pdMS_TO_TICKS(50));
   }
@@ -278,18 +277,16 @@ void TASK_Check_Relay_Status(void *p)
   while (true)
   {
     esp_task_wdt_reset();
-    //Serial.println("teste");
 
     if (digitalRead(RELAY_PIN))
     {
-      //Serial.println("teste");
+
       flag_Objects = true;
     }
 
     if (!digitalRead(RELAY_PIN) && flag_Objects == true)
     {
 
-      //Serial.println("teste");
       flag_Objects = false;
       count_Objects++;
       Serial.print("Contagem de objetos detectados: ");
@@ -316,13 +313,11 @@ bool hasInternet()
 {
   WiFiClient client;
   //Endereço IP do Google 172.217.3.110
-  IPAddress adr = IPAddress(8, 8, 8, 8);
+  IPAddress adr = IPAddress(8, 8, 4, 4);
   //Tempo limite para conexão
   client.setTimeout(5);
   //Tenta conectar
   bool connected = client.connect(adr, 80);
-  Serial.print("estado da conexão: ");
-  Serial.println(connected);
   //Fecha a conexão
   client.stop();
   //Retorna true se está conectado ou false se está desconectado
@@ -363,12 +358,11 @@ void check_Wifi_Connection()
 void send_POST_Again()
 {
   if (ObjFS.fileExists())
-  {    
+  {
     if (WiFi.status() == WL_CONNECTED)
-    {      
-      //if (hasInternet())
-      if (check_Ping())
-      {        
+    {
+      if (hasInternet())
+      {
         File file = SPIFFS.open(myFilePath, FILE_READ);
 
         String line = "";
