@@ -22,6 +22,21 @@
 		},
 		{
 			"path": "..\\..\\..\\..\\..\\..\\Codigos\\Python"
+		},
+		{
+			"path": "..\\..\\..\\..\\..\\..\\Codigos\\PHP"
+		},
+		{
+			"path": "..\\..\\..\\..\\..\\..\\..\\..\\xampp\\htdocs\\gelopar"
+		},
+		{
+			"path": "..\\..\\..\\..\\..\\..\\Codigos\\CLP\\ESP32 PLC\\ESP32_Comm"
+		},
+		{
+			"path": "..\\..\\..\\..\\..\\..\\..\\..\\xampp\\htdocs"
+		},
+		{
+			"path": "..\\..\\Count_ESP32"
 		}
 	],
 	"settings": {}

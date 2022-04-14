@@ -19,11 +19,11 @@
 #define MAC_ADDRESS "B8:27:EB:B0:21:80"
 #define FORMAT_LITTLEFS_IF_FAILED true
 
-//const char *ssid = "ForSellEscritorio";
-//const char *password = "forsell1010";
+const char *ssid = "ForSellEscritorio";
+const char *password = "forsell1010";
 
-const char *ssid = "Andrew";
-const char *password = "teste123";
+//const char *ssid = "Andrew";
+//const char *password = "teste123";
 
 //const char *ssid = "Andre Wifi";
 //const char *password = "090519911327";
@@ -198,13 +198,13 @@ void setup()
       taskCoreOne);             /*Núcleo que executará a tarefa */
 
   xTaskCreatePinnedToCore(
-      TASK_Send_POST,   /*função que implementa a tarefa */
-      "TASK_Send_POST", /*nome da tarefa */
-      10000,            /*número de palavras a serem alocadas para uso com a pilha da tarefa */
-      NULL,             /*parâmetro de entrada para a tarefa (pode ser NULL) */
-      2,                /*prioridade da tarefa (0 a N) */
-      NULL,             /*referência para a tarefa (pode ser NULL) */
-      taskCoreOne);     /*Núcleo que executará a tarefa */
+      TASK_Send_POST,          /*função que implementa a tarefa */
+      "TASK_Send_POST",        /*nome da tarefa */
+      10000,                   /*número de palavras a serem alocadas para uso com a pilha da tarefa */
+      NULL,                    /*parâmetro de entrada para a tarefa (pode ser NULL) */
+      2,                       /*prioridade da tarefa (0 a N) */
+      NULL,                    /*referência para a tarefa (pode ser NULL) */
+      taskCoreOne);            /*Núcleo que executará a tarefa */
 
   xTaskCreatePinnedToCore(
       TASK_Send_Data_From_SPIFFS,   /*função que implementa a tarefa */
