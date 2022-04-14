@@ -1,0 +1,43 @@
+{
+	"folders": [
+		{
+			"path": "..\\..\\..\\..\\..\\..\\Codigos\\React"
+		},
+		{
+			"name": "211109-142001-esp32doit-devkit-v1",
+			"path": ".."
+		},
+		{
+			"name": "211112-093020-esp32dev",
+			"path": "..\\..\\211112-093020-esp32dev"
+		},
+		{
+			"path": "..\\..\\..\\..\\..\\..\\Codigos\\Electron"
+		},
+		{
+			"path": "..\\..\\..\\..\\..\\..\\Downloads\\home-energy-monitor-master"
+		},
+		{
+			"path": "..\\..\\SCT013-v1.0"
+		},
+		{
+			"path": "..\\..\\..\\..\\..\\..\\Codigos\\Python"
+		},
+		{
+			"path": "..\\..\\..\\..\\..\\..\\Codigos\\PHP"
+		},
+		{
+			"path": "..\\..\\..\\..\\..\\..\\..\\..\\xampp\\htdocs\\gelopar"
+		},
+		{
+			"path": "..\\..\\..\\..\\..\\..\\Codigos\\CLP\\ESP32 PLC\\ESP32_Comm"
+		},
+		{
+			"path": "..\\..\\..\\..\\..\\..\\..\\..\\xampp\\htdocs"
+		},
+		{
+			"path": "..\\..\\Count_ESP32"
+		}
+	],
+	"settings": {}
+}
